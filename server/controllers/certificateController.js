@@ -87,7 +87,7 @@ const generateCertificate = async (req, res) => {
            .fontSize(100)
            .fillColor('#EAF0F6') // Very faint
            .fillOpacity(0.3)
-           .text('POSEIFY', -200, -50);
+           .text('SMART COLLEGE', -300, -50);
         doc.restore();
 
         // Header

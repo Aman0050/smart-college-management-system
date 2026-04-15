@@ -9,7 +9,7 @@ function PageLoader() {
                 <div className="relative mb-8">
                     <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-pink-600 to-rose-600 flex items-center justify-center p-0.5 animate-bounce shadow-2xl shadow-pink-500/20">
                         <div className="w-full h-full bg-[#050505] rounded-[1.4rem] flex items-center justify-center overflow-hidden relative group">
-                            <span className="text-4xl font-black text-white italic tracking-tighter">P</span>
+                            <span className="text-4xl font-black text-white italic tracking-tighter">S</span>
                             {/* Scanning Line */}
                             <div className="absolute top-0 left-0 w-full h-[2px] bg-pink-500 shadow-[0_0_15px_pink] animate-scan-laser"></div>
                         </div>
@@ -18,7 +18,7 @@ function PageLoader() {
 
                 {/* Loading Text */}
                 <div className="text-center">
-                    <h2 className="text-xl font-black text-white uppercase tracking-[0.3em] mb-2">Poseify</h2>
+                    <h2 className="text-xl font-black text-white uppercase tracking-[0.3em] mb-2">Smart College</h2>
                     <div className="flex items-center gap-1 justify-center">
                         <div className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-bounce [animation-delay:-0.3s]"></div>
                         <div className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-bounce [animation-delay:-0.15s]"></div>
