@@ -36,7 +36,7 @@ export default function InstallPWA() {
                <img src="/icon-192x192.png" alt="App Icon" className="w-full h-full object-cover rounded-[14px]" />
             </div>
             <div className="flex-1">
-                <h3 className="text-white font-bold text-[15px] leading-tight mb-0.5">Install Poseify App</h3>
+                <h3 className="text-white font-bold text-[15px] leading-tight mb-0.5">Install Smart College App</h3>
                 <p className="text-slate-400 text-xs">Add to home screen for the full premium experience.</p>
             </div>
             
