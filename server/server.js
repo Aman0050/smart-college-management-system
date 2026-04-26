@@ -27,6 +27,7 @@ app.use(cors({
         'http://localhost:5173',
         'http://localhost:5174',
         'http://127.0.0.1:5173',
+        'https://smart-college-management-system-8xirajius-aman0050s-projects.vercel.app',
         process.env.CLIENT_URL,
     ].filter(Boolean),
     credentials: true,
