@@ -28,9 +28,15 @@ export const AuthProvider = ({ children }) => {
             routeByRole(response.data.role);
             return { success: true };
         } catch (error) {
+            let msg = 'Login failed';
+            if (!error.response) {
+                msg = 'Network Error: Backend unreachable. Ensure server is running on port 5000.';
+            } else if (error.response.data?.message) {
+                msg = error.response.data.message;
+            }
             return {
                 success: false,
-                message: error.response?.data?.message || 'Login failed'
+                message: msg
             };
         }
     };

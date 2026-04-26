@@ -14,21 +14,26 @@ function Courses() {
     const [filter, setFilter] = useState('all'); // all, upcoming, past
 
     useEffect(() => {
-        if (!user) return;
-
         const fetchEvents = async () => {
             try {
                 const res = await api.get('/events');
-                setEvents(res.data);
+                setEvents(Array.isArray(res.data) ? res.data : []);
             } catch (err) {
-                setError('Failed to load courses. Ensure you are logged in if this is restricted.');
+                console.error('Failed to load courses:', err);
+                setError(
+                    err.response?.status === 401
+                        ? 'Session expired. Please log in again.'
+                        : `Failed to load courses. ${err.message || 'Check your connection.'}`
+                );
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchEvents();
-    }, [user]);
+        if (!authLoading) {
+            fetchEvents();
+        }
+    }, [authLoading]);
 
     const now = new Date();
 

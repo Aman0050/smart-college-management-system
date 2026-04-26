@@ -19,6 +19,7 @@ function CourseManage() {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('attendance');
     const [stats, setStats] = useState({ present: 0, total: 0 });
+    const [registrations, setRegistrations] = useState([]);
     const [qrToken, setQrToken] = useState('');
     const [timeLeft, setTimeLeft] = useState(30);
     const [uploadLoading, setUploadLoading] = useState(false);
@@ -26,12 +27,17 @@ function CourseManage() {
 
     const fetchDetails = async () => {
         try {
-            const res = await api.get(`/events/${id}`);
-            setEvent(res.data);
+            const [eventRes, regRes] = await Promise.all([
+                api.get(`/events/${id}`),
+                api.get(`/events/${id}/registrations`)
+            ]);
+
+            setEvent(eventRes.data);
             setStats({
-                present: res.data.attendeesCount || 0,
-                total: res.data.registrationsCount || 0
+                present: eventRes.data.attendeesCount || 0,
+                total: eventRes.data.registrationsCount || 0
             });
+            setRegistrations(regRes.data.registrations || []);
         } catch (error) {
             toast.error("Failed to fetch course details");
             navigate('/teacher');
@@ -156,17 +162,69 @@ function CourseManage() {
             </div>
 
             {activeTab === 'attendance' && (
-                <div className="glass-panel p-8 rounded-3xl text-center flex flex-col items-center">
-                    <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-6 text-2xl">📊</div>
-                    <h2 className="text-xl font-bold text-white mb-2">Participation Overview</h2>
-                    <p className="text-slate-400 max-w-sm mb-8">Currently <b>{stats.present}</b> out of <b>{stats.total}</b> registered students have been marked as present.</p>
-                    
-                    <button 
-                        onClick={() => setActiveTab('live')}
-                        className="px-8 py-3 bg-white text-black rounded-xl font-bold hover:bg-slate-200 transition-all active:scale-95"
-                    >
-                        Start Live Session
-                    </button>
+                <div className="space-y-8 animate-slide-up">
+                    <div className="glass-panel p-8 rounded-3xl text-center flex flex-col items-center relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/5 rounded-bl-full blur-2xl"></div>
+                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-6 text-2xl">📊</div>
+                        <h2 className="text-xl font-bold text-white mb-2">Participation Overview</h2>
+                        <p className="text-slate-400 max-w-sm mb-8">Currently <b>{stats.present}</b> out of <b>{stats.total}</b> registered students have been marked as present.</p>
+                        
+                        <button 
+                            onClick={() => setActiveTab('live')}
+                            className="px-8 py-3 bg-white text-black rounded-xl font-bold hover:bg-slate-200 transition-all active:scale-95 shadow-xl"
+                        >
+                            Start Live Session
+                        </button>
+                    </div>
+
+                    <div className="glass-panel rounded-[2rem] overflow-hidden border border-white/5">
+                        <div className="px-8 py-6 border-b border-white/5 flex items-center gap-3">
+                            <span className="text-xl">📋</span>
+                            <h3 className="text-lg font-bold text-white">Student Roster</h3>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead>
+                                    <tr className="text-[10px] uppercase font-black tracking-widest text-slate-500 bg-white/[0.02]">
+                                        <th className="px-8 py-5">Student Name</th>
+                                        <th className="px-8 py-5">Email</th>
+                                        <th className="px-8 py-5">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/5">
+                                    {registrations.length > 0 ? (
+                                        registrations.map((reg) => (
+                                            <tr key={reg._id} className="group hover:bg-white/[0.02] transition-colors">
+                                                <td className="px-8 py-5">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500/20 to-rose-500/20 flex items-center justify-center text-xs font-bold text-pink-400">
+                                                            {reg.user?.name?.charAt(0)}
+                                                        </div>
+                                                        <span className="text-sm font-semibold text-slate-200">{reg.user?.name}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-5 text-sm text-slate-400">{reg.user?.email}</td>
+                                                <td className="px-8 py-5">
+                                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                                                        reg.status === 'attended' 
+                                                        ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' 
+                                                        : 'bg-slate-500/10 text-slate-500 border border-slate-500/20'
+                                                    }`}>
+                                                        <span className={`w-1.5 h-1.5 rounded-full ${reg.status === 'attended' ? 'bg-emerald-500 animate-pulse' : 'bg-slate-500'}`}></span>
+                                                        {reg.status === 'attended' ? 'Present' : 'Absent'}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="3" className="px-8 py-12 text-center text-slate-500 italic">No registrations found for this course.</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             )}
 

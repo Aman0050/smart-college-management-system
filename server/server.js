@@ -21,8 +21,19 @@ connectDB();
 const app = express();
 
 // Security Middlewares
-app.use(helmet()); // Set security HTTP headers
-app.use(cors());
+app.use(helmet({ crossOriginResourcePolicy: false })); // Set security HTTP headers
+app.use(cors({
+    origin: [
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'http://127.0.0.1:5173',
+        process.env.CLIENT_URL,
+    ].filter(Boolean),
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    optionsSuccessStatus: 200,
+}));
 app.use(express.json());
 
 // Request logging
@@ -64,7 +75,7 @@ app.get('/', (req, res) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
-    console.error(err.stack);
+    console.error('Global Error Handler:', err.stack);
     res.status(err.statusCode || 500).json({
         message: err.message || 'Internal Server Error',
         ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),

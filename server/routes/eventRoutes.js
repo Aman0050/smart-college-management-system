@@ -14,7 +14,7 @@ const {
     getEventRegistrations,
     uploadAttendanceCSV,
 } = require('../controllers/eventController');
-const { protect, authorize } = require('../middleware/authMiddleware');
+const { protect, authorize, optionalProtect } = require('../middleware/authMiddleware');
 const multer = require('multer');
 
 // Configure multer for memory storage
@@ -33,8 +33,8 @@ const upload = multer({
 // Student: get my registrations (must be before /:id to avoid route conflict)
 router.get('/my-registrations', protect, authorize('student'), getMyRegistrations);
 
-// Public route to get events
-router.get('/', getEvents);
+// Public route to get events (optionalProtect so admins/organizers see all, students see approved only)
+router.get('/', optionalProtect, getEvents);
 
 // Get single event
 router.get('/:id', getEventById);

@@ -22,7 +22,7 @@ const googleAuth = async (req, res) => {
         });
 
         const payload = ticket.getPayload();
-        
+
         if (!payload || !payload.email) {
             return res.status(400).json({ message: 'Invalid Google Token' });
         }
@@ -30,7 +30,7 @@ const googleAuth = async (req, res) => {
         const { email, name, email_verified } = payload;
 
         if (!email_verified) {
-             return res.status(400).json({ message: 'Google account email must be verified' });
+            return res.status(400).json({ message: 'Google account email must be verified' });
         }
 
         // Check if user already exists
@@ -60,12 +60,12 @@ const googleAuth = async (req, res) => {
 
     } catch (error) {
         console.error('Google Auth Error:', error);
-        
+
         // Return a more descriptive error message if available
-        const errorMessage = error.message?.includes('audience') 
-            ? 'Google Client ID mismatch. Please check your configuration.' 
+        const errorMessage = error.message?.includes('audience')
+            ? 'Google Client ID mismatch. Please check your configuration.'
             : 'Failed to verify Google Account. Please ensure your Client ID is correct.';
-            
+
         res.status(500).json({ message: errorMessage });
     }
 };
@@ -169,11 +169,13 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
+        console.log(`Login attempt for: ${email}`);
 
         // For manual logins if still used (or can be removed if strictly Google)
         const user = await User.findOne({ email }).select('+password');
 
         if (user && (await user.matchPassword(password))) {
+            console.log(`Login successful for: ${email}`);
             res.json({
                 _id: user._id,
                 name: user.name,
@@ -183,6 +185,7 @@ const loginUser = async (req, res) => {
                 token: generateToken(user._id),
             });
         } else {
+            console.warn(`Login failed for: ${email} - Invalid credentials`);
             res.status(401).json({ message: 'Invalid credentials' });
         }
     } catch (error) {

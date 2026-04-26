@@ -41,4 +41,21 @@ const authorize = (...roles) => {
     };
 };
 
-module.exports = { protect, authorize };
+// Populates req.user if a valid token is present, but does NOT block unauthenticated requests
+const optionalProtect = async (req, res, next) => {
+    if (
+        req.headers.authorization &&
+        req.headers.authorization.startsWith('Bearer')
+    ) {
+        try {
+            const token = req.headers.authorization.split(' ')[1];
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            req.user = await User.findById(decoded.id).select('-password');
+        } catch (_) {
+            // Token invalid or expired — just continue without a user
+        }
+    }
+    next();
+};
+
+module.exports = { protect, authorize, optionalProtect };
